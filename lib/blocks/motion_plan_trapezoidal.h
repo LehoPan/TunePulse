@@ -24,7 +24,7 @@ class MotionPlanTrapezoidal : public Block {
     BLOCK_OUTPUT(float, current_jerk);  // output for the current jerk
     BLOCK_OUTPUT(float, current_time);  // output for the current time elapsed
 
-    enum Phase { READY, ACCEL, CONSTANT, DECEL}; // class that keeps track of what part of the profile it is currently in
+    enum Phase {READY, ACCEL, CONSTANT, DECEL}; // class that keeps track of what part of the profile it is currently in
 
     private:
         float position_tracking;        // keeps accounted how far has been traveled
@@ -69,7 +69,7 @@ void MotionPlanTrapezoidal::tick() {
             position_tracking = 0;
             velocity = 0;
             acceleration = 0;
-            jerk = max_accel_;
+            jerk = 0;
             time = 0;
             accel_distance = 0;
             accel_step = 0;
@@ -77,7 +77,7 @@ void MotionPlanTrapezoidal::tick() {
 
             break;
         
-        case ACCEL:
+        case ACCEL: // increases velocity based on max acceleration
             // set acceleration to max
             acceleration = max_accel_;
 
@@ -107,7 +107,7 @@ void MotionPlanTrapezoidal::tick() {
 
             break;
         
-        case CONSTANT:
+        case CONSTANT: // holds a constant velocity
             // holds the current velocity
             position_tracking += velocity * dt_;
 
@@ -118,7 +118,7 @@ void MotionPlanTrapezoidal::tick() {
 
             break;
         
-        case DECEL:
+        case DECEL: // brings velocity back down according to negative max acceleration
             // set deceleration to negative max acceleration
             acceleration = -max_accel_;
 
